@@ -1,0 +1,11 @@
+{
+  "name": "meduzellar",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Meduzellar Platform concept repository. lint and build validate the agent and rules contract until an application exists.",
+  "packageManager": "pnpm@11.14.0",
+  "scripts": {
+    "lint": "node scripts/validate-agent-config.mjs",
+    "build": "node scripts/validate-agent-config.mjs"
+  }
+}

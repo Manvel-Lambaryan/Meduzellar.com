@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Principles
 
-- Follow the existing database and migration framework or the approved TECH_CARD; PostgreSQL and Prisma are template defaults, not universal requirements.
+- Follow the existing database and migration framework or the approved TECH_CARD. PostgreSQL and Prisma are template defaults, not Meduzellar decisions. Do not add schema or migration files before that card selects them.
 - Apply **all schema changes** through the project's migration system. Never hand-edit production schema to bypass migration history, and never delete migration files to hide a failure.
 - **Indexes** for frequent filters, joins, and sorts — verify with `EXPLAIN` on hot paths.
 - **Parameterized queries only**. Never concatenate user input into SQL; whitelist dynamic identifiers such as `ORDER BY` columns.

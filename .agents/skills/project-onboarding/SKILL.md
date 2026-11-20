@@ -1,11 +1,11 @@
 ---
 name: project-onboarding
-description: Use when starting a new project from this template, analyzing the brief, defining project scope and size, preparing the TECH_CARD, and establishing the initial architecture and delivery workflow. Do not use for ordinary development in an already initialized project.
+description: Use when starting Meduzellar implementation from README.md and docs/BRIEF.md, defining project size, preparing the TECH_CARD, and establishing architecture and delivery workflow. Do not use for ordinary development, and do not treat template stack tables as approved decisions.
 ---
 
 # Project onboarding
 
-Use this workflow for a new project or an explicit onboarding restart. Do not run it for ordinary development tasks.
+Use this workflow to move Meduzellar from the approved brief toward an approved TECH_CARD. Product scope comes from `README.md` and `docs/BRIEF.md`. Do not run it for ordinary development tasks, and do not treat `docs/reference/knowledge-base/TECH_STACK.md` as a decision.
 
 ## Workflow
 

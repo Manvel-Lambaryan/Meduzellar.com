@@ -2,6 +2,8 @@
 
 This directory contains reusable AI workflows and documentation for maintaining the repository's Agent system.
 
+Meduzellar product scope lives in the repository [`README.md`](../README.md), [`docs/BRIEF.md`](../docs/BRIEF.md), and [`.cursor/rules/02-product.mdc`](../.cursor/rules/02-product.mdc). Do not store product decisions here.
+
 - [`skills/`](skills/) — active task workflows for AI agents.
 - [`catalog/`](catalog/) — Skill registry, composable profiles, and external source provenance.
 - [`system/ARCHITECTURE.md`](system/ARCHITECTURE.md) — Rules, Skills, and References architecture.

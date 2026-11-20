@@ -6,6 +6,8 @@ alwaysApply: false
 
 # NestJS
 
+Apply this rule only after `docs/TECH_CARD.md` selects NestJS. Until then, do not create controllers, modules, or services in order to follow the template.
+
 - **Thin controllers** — HTTP mapping + DTO validation only; business logic in **services**.
 - **Modules** per domain; clear boundaries; avoid circular module imports.
 - Validate all external inputs with the project's DTO and validation approach (`class-validator` / `class-transformer` when selected).

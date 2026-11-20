@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Internationalization (i18n)
 
+Interface locales and Meduzellar realtime translation are different systems. Message catalogs do not implement call or chat translation. Apply a catalog library only after `docs/TECH_CARD.md` selects it.
+
 - **No hardcoded UI copy** in components — use message catalogs (`next-intl`, `react-intl`, or project standard).
 - **Routing:** locale prefix (`app/[locale]/...`) or agreed strategy; middleware for detection only as in existing codebase.
 - **Formatting:** `Intl.NumberFormat`, `Intl.DateTimeFormat`, `Intl.RelativeTimeFormat`, `Intl.DisplayNames` — never manual date/number concatenation for display.

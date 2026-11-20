@@ -1,0 +1,32 @@
+---
+description: Meduzellar Platform product scope. Always applied. README is the product source of truth.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Product
+
+[`README.md`](../../README.md) is the product source of truth. [`docs/BRIEF.md`](../../docs/BRIEF.md) is the working brief. This repository is Meduzellar Platform at **Concept & Planning**. Described capabilities are vision, not implemented behavior.
+
+## In scope
+
+One platform, five domains:
+
+1. **Marketplace** — projects, source code, plugins, designs, templates, tools, and other digital assets.
+2. **Network and recruitment** — professional profiles, jobs, applications, and interviews.
+3. **Communication** — messages, audio, video, interviews, and project meetings inside the platform.
+4. **Realtime translation** — speech and chat during a conversation. This is not interface i18n.
+5. **Custom assistant** — search, recommendations, and permitted platform actions. It is not a separate product and not the system of record.
+
+A listing is not a job. Communication does not own hiring. Translation does not own calls. The assistant does not own listings, jobs, or messages.
+
+## Out of scope until explicitly approved
+
+- Any later Meduzellar product beyond this platform.
+- Choosing stack, hosting, payments, storage, mail, realtime, or model vendors.
+- Scaffolding an application, schema, or public API.
+- Treating a template default — Next.js, NestJS, Neon, Prisma, R2, Resend, Auth.js — as a project decision.
+
+## Sensitive once built
+
+Payments and digital delivery, personal and company profiles, recruitment data, call and message content, translation text, and assistant prompts. Do not invent credentials.
