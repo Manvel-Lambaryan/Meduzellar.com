@@ -1,5 +1,7 @@
 # Agent system phase status
 
+This file records the portable agent-system package only. It does not describe Meduzellar Platform delivery. Product status is Concept & Planning in `README.md` section 9.
+
 Current phase:
 Phase 3C Batch 1B — Performance and Accessibility Skills
 

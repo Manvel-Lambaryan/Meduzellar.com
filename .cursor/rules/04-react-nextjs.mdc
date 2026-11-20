@@ -6,6 +6,8 @@ alwaysApply: false
 
 # React and Next.js
 
+Apply this rule only after `docs/TECH_CARD.md` selects React and Next.js. Until then, do not create matching files in order to follow the template.
+
 - **Server Components by default** — add `'use client'` at the smallest practical boundary when hooks, browser APIs, event handlers, or interactive client state require it. Do not mark an entire tree as client code to work around a local issue.
 - Prefer **named exports** for reusable components; follow Next.js default-export contracts for pages, layouts, and other convention files.
 - **Colocate** feature code; avoid prop-drilling hell — use composition or context sparingly.

@@ -8,8 +8,8 @@ alwaysApply: true
 
 Other `.mdc` files apply by **globs** and task. If a rule seems missing, check the file type matches that rule’s globs.
 
-For greenfield setup, project sizing, and TECH_CARD preparation, use the
-[`project-onboarding`](../../.agents/skills/project-onboarding/SKILL.md) skill. Do not rerun onboarding during ordinary development tasks.
+Product scope is [`02-product.mdc`](02-product.mdc) and [`README.md`](../../README.md). For sizing and TECH_CARD preparation, use the
+[`project-onboarding`](../../.agents/skills/project-onboarding/SKILL.md) skill. Do not rerun onboarding during ordinary development tasks. Do not treat a template stack as approved.
 
 ## Each task
 
@@ -71,6 +71,7 @@ Full DoD/PR/release checklists: [`docs/reference/Check/Quality/project-quality-c
 
 | Area | File |
 |------|------|
+| Product | `02-product.mdc` |
 | Architecture | `01-architecture.mdc` |
 | TypeScript | `03-typescript.mdc` |
 | React / Next | `04-react-nextjs.mdc` |
@@ -91,4 +92,4 @@ Full DoD/PR/release checklists: [`docs/reference/Check/Quality/project-quality-c
 
 Workflows: [`.agents/skills/`](../../.agents/skills/). Platform how-tos and other long-form material live under `docs/reference/`.
 
-**Version:** 3.0 · **Date:** 2026-04-02
+**Version:** 3.1 · **Date:** 2026-11-20

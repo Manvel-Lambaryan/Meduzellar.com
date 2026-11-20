@@ -7,7 +7,7 @@ alwaysApply: false
 # Documentation
 
 - Keep project documents proportional to the approved TECH_CARD and repository templates: `BRIEF`, `TECH_CARD`, architecture, progress, decisions, and other material only as needed.
-- **README** at repo root: how to run, test, env vars (see `.env.example`).
+- **README** at repo root is the Meduzellar product concept. Do not replace it with a setup guide. Run, test, and env instructions are added only after an application exists. Scope and status: `README.md` and `docs/BRIEF.md`. Approved stack, once it exists: `docs/TECH_CARD.md`.
 - **ADR** for significant architectural decisions.
 - **Public APIs** documented (OpenAPI or markdown) and updated with changes.
 - **Comments** in code in English per user rules; docs can follow team language policy.

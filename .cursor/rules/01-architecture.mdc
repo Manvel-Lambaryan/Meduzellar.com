@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Architecture
 
+Meduzellar has no approved size or layout. Do not scaffold `src/`, `apps/`, or `packages/` before `docs/TECH_CARD.md` records one. When architecture is approved, keep marketplace, network and recruitment, communication, realtime translation, and the assistant as separate domains with explicit boundaries. The layouts below are template options, not the current structure.
+
 ## Proportional architecture
 
 - Match structure to project size, domain complexity, team, expected lifetime, and the existing codebase.
