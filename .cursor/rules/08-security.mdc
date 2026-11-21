@@ -38,7 +38,7 @@ alwaysApply: false
 
 ## Dependencies
 
-- Keep `npm audit` / CI clean; no ignored critical vulns without ticket.
+- Keep `npm audit` / CI clean. A Critical dependency vulnerability must not be ignored, suppressed, or accepted because a ticket exists. Creating a ticket tracks the issue. It is not a security approval or exception. When a Critical vulnerability is identified and remains unresolved, stop the affected work and report the dependency, the vulnerability identifier when available, the affected component, and the relevant evidence. Canonical invariants are in [`AGENTS.md`](../../AGENTS.md).
 
 ## Headers
 
