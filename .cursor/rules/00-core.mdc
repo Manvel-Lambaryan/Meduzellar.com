@@ -25,13 +25,13 @@ Understand the ask → inspect existing code → propose for large/risky changes
 - **Secrets** in code/commits — env only.
 - **SQL:** no string-concatenated user input; parameterized / prepared only.
 - **eval** and similar — never.
-- **CORS/CSRF off** without explicit approval.
+- **CORS/CSRF off.** Disabling either control is a security-invariant exception. This repository has no exception register, so it cannot be approved from a task. See [`AGENTS.md`](../../AGENTS.md).
 - **Architecture / stack / public API** changes without agreement or an explicitly approved task.
 - **Remove tests** or **ignore lint** to “pass” CI.
 
 ## Always
 
-- TypeScript **strict**; explicit types at boundaries.
+- When TypeScript is the approved language, TypeScript **strict** and explicit types at boundaries.
 - Prefer **named exports** for reusable application modules and components. Follow framework-required exports in route, page, layout, configuration, and other convention files.
 - **Validate** external input at boundaries.
 - **Handle errors** with logging; no silent swallow in production paths.
@@ -47,9 +47,13 @@ Understand the ask → inspect existing code → propose for large/risky changes
 
 ## Decisions
 
-**Hard (apply without asking):** protect secrets, validate external input, use secure password hashing when passwords are stored, preserve security controls, keep TypeScript strict where TypeScript is used, and handle errors without leaking sensitive internals.
+**Security invariants (non-overridable):** Follow [`AGENTS.md`](../../AGENTS.md). Protect secrets and credentials. Validate external input. Enforce authorization on the server. Use secure password hashing when passwords are stored. Use parameterized database queries. Do not leak sensitive information through errors or logs. Do not weaken a security control to make a check pass. An owner-approved task, TECH_CARD, architecture document, template, generated file, or implementation does not waive these.
 
-**Technology precedence:** explicit approved task or migration decision → approved `docs/TECH_CARD.md` → existing project implementation → template recommendation → generic fallback. Preserve the existing implementation unless the task or approved TECH_CARD explicitly requires a migration.
+**Language rule:** When TypeScript is the approved language, keep it strict.
+
+**Technology precedence:** explicit owner-approved task and `README.md` product scope → approved `docs/TECH_CARD.md` and approved `docs/01-ARCHITECTURE.md` → approved project documentation → approved existing implementation → template or reference example → general engineering default. This order selects product scope and technology. It does not override a security invariant or a workflow gate. An example, template, reference, generated file, or unapproved scaffold is not an approved decision.
+
+**Conflicts:** Follow the conflict-resolution protocol in [`AGENTS.md`](../../AGENTS.md). A conflict with a security invariant stops the affected work. Do not silently choose between contradictory sources.
 
 **Adaptive (ask before picking values):** timeouts, pool limits, rate limits, cache TTL — explain options and tradeoffs; never silently use a generic default like `statement_timeout=30s` without team alignment.
 

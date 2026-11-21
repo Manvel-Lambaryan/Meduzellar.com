@@ -13,7 +13,7 @@ alwaysApply: false
 - Secrets in code, logs, or client bundles (`NEXT_PUBLIC_*` only for truly public values).
 - `eval`, `new Function(userInput)`, or executing user-controlled strings.
 - SQL built from concatenated user input; use the project ORM or parameterized queries.
-- `cors({ origin: '*' })` for authenticated APIs; disable CSRF without explicit approval.
+- `cors({ origin: '*' })` for authenticated APIs. CORS and CSRF are mandatory. Disabling either one is a security-invariant exception, not an ordinary configuration or task decision. This repository has no approved security exception process or exception register, so no task, chat approval, TECH_CARD entry, architecture decision, or ordinary owner approval can authorize disabling either control. If an implementation appears to require disabling either control, stop the affected work and report the conflict. Canonical invariants are in [`AGENTS.md`](../../AGENTS.md).
 - Logging passwords, tokens, full `Authorization` headers.
 
 ## Auth (follow `docs/TECH_CARD.md` / section 5)
