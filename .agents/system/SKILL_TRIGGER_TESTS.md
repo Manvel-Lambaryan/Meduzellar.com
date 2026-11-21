@@ -10,7 +10,7 @@ These routing cases review Skill descriptions for clear positive and negative bo
 | --- | --- | --- |
 | “Start a new project from this template and prepare its TECH_CARD.” | `project-onboarding` | New-project initialization and decisions. |
 | “Read the completed BRIEF, recommend A/B/C size, and design the initial architecture.” | `project-onboarding` | Sizing and initial architecture workflow. |
-| “We are restarting greenfield setup; establish stack, docs, quality checks, and delivery phases.” | `project-onboarding` | Explicit onboarding restart. |
+| “We are restarting greenfield setup; establish stack, docs, quality checks, and delivery phases.” | `project-onboarding` Phase A only | Planning can prepare docs. CI and release stay in Phase C until a separate approval. |
 
 ### Negative
 
@@ -19,6 +19,7 @@ These routing cases review Skill descriptions for clear positive and negative bo
 | “Add a filter to the existing orders page.” | No `project-onboarding` | Ordinary feature implementation. |
 | “The current login endpoint returns 500; find the cause.” | `debug-first` | Defect diagnosis, not initialization. |
 | “Check whether my completed refactor passes relevant tests.” | `verify-before-completion` | Completion validation. |
+| “Scaffold the application and turn on CI now.” | `project-onboarding`, then stop | Phase B and Phase C need separate owner authorization. Missing approval ends the workflow. |
 
 ## debug-first
 
