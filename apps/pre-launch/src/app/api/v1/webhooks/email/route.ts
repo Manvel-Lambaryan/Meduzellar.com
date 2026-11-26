@@ -1,12 +1,17 @@
 import { Resend } from "resend";
 import { z } from "zod";
 import { bytes, handle, HttpError, nonCookie } from "@/lib/security/http";
-import { emailEvent } from "@/lib/delivery/webhook";
+import { normalizeEmail } from "@/lib/security/crypto";
+import { suppressWaitlistAddresses } from "@/lib/waitlist/json-service";
+import { storageConfigured } from "@/lib/waitlist/json-storage";
 
 const schema = z.object({
   type: z.string().max(90),
   created_at: z.iso.datetime({ offset: true }),
-  data: z.object({ email_id: z.string().max(120) }),
+  data: z.object({
+    email_id: z.string().max(120),
+    to: z.array(z.string().max(320)).max(50).optional(),
+  }),
 });
 export async function POST(req: Request) {
   return handle(async () => {
@@ -39,12 +44,28 @@ export async function POST(req: Request) {
       throw new HttpError(401, "authentication_required");
     }
     const event = schema.parse(verified);
-    await emailEvent({
-      eventId: id,
-      messageId: event.data.email_id,
-      kind: event.type,
-      eventTime: new Date(event.created_at),
-    });
+    if (storageConfigured()) {
+      if (
+        ["email.bounced", "email.complained", "email.suppressed"].includes(
+          event.type,
+        )
+      ) {
+        const addresses = event.data.to?.map(normalizeEmail);
+        if (!addresses?.length || addresses.some((address) => !address))
+          throw new HttpError(400, "invalid_input");
+        await suppressWaitlistAddresses(
+          addresses.filter((address): address is string => Boolean(address)),
+        );
+      }
+    } else if (process.env.VERCEL !== "1") {
+      const { emailEvent } = await import("@/lib/delivery/webhook");
+      await emailEvent({
+        eventId: id,
+        messageId: event.data.email_id,
+        kind: event.type,
+        eventTime: new Date(event.created_at),
+      });
+    } else throw new HttpError(503, "unavailable");
     return new Response(null, {
       status: 204,
       headers: { "Cache-Control": "no-store" },

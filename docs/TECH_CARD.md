@@ -7,7 +7,8 @@
 | Source and layout | `Manvel-Lambaryan/Meduzellar.com`, `apps/pre-launch/`. Independent application within the repository, with the existing Size A internal layout and module-local dependencies. |
 | Runtime and tooling | Node.js 24, strict TypeScript, npm and the module's committed lockfile. The module manifest and lockfile record the audited pins. |
 | Web and API | Next.js 16 App Router, React, CSS Modules, Zod and the existing REST route handlers. |
-| Data and delivery | PostgreSQL 17, Prisma 7 with pg, transactional outbox, existing Resend and Clerk integrations. Approved for local and sandbox validation under the original record. Production providers and activation retain their separate approvals. |
+| Waitlist storage and delivery | Private Vercel Blob, authoritative `waitlist.json`, ETag conditional writes, and a separate private JSON rate-counter document. Encrypted addresses, signed verification and unsubscribe, and a committed mail outbox. Local file storage is limited to loopback synthetic testing. Existing Resend integration is the delivery candidate within the approved cost constraints. |
+| Other operations | Legacy operator, campaign and privacy infrastructure remains under the existing PostgreSQL, Prisma, and Clerk decision. It is separate from JSON enrollment and must stay inactive for JSON contacts until explicitly integrated. |
 | Validation | ESLint, TypeScript, Vitest, Playwright, axe-core and dependency audit. |
 | Hosting | Existing `meduzellar` Vercel project for this module only, with Node 24, Next.js, `apps/pre-launch` as Root Directory and `main` as the production branch. Preview validation precedes production deployment. |
 
