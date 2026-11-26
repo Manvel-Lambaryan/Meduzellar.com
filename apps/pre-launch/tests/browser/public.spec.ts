@@ -67,7 +67,7 @@ test("accessible page, HTML consent validation, restrictive headers and origin r
   await page.getByRole("button", { name: "Notify Me" }).click();
   await expect(page.getByRole("checkbox")).toBeFocused();
   const unauthorized = await request.post("/api/v1/admin/campaigns", {
-    headers: { Origin: "http://127.0.0.1:3001" },
+    headers: { Origin: new URL(page.url()).origin },
     data: {},
   });
   expect(unauthorized.status()).toBe(401);

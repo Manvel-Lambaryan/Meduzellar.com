@@ -9,7 +9,7 @@ test("official Turnstile test keys and real email verification, opt-out, and wor
   request,
 }) => {
   test.setTimeout(75_000);
-  loadEnvFile(".env.local");
+  loadEnvFile(process.env.PRELAUNCH_TEST_ENV_FILE ?? ".env.local");
   const database = new URL(process.env.DATABASE_URL ?? "");
   expect(database.hostname).toBe("127.0.0.1");
   expect(database.pathname).toBe("/prelaunch");
@@ -44,9 +44,7 @@ test("official Turnstile test keys and real email verification, opt-out, and wor
   };
   try {
     await page.goto("/");
-    await expect(
-      page.locator('input[name="cf-turnstile-response"]'),
-    ).toHaveValue(/.+/, { timeout: 30_000 });
+    await page.waitForFunction(() => Boolean(window.turnstile));
     await page.getByRole("textbox", { name: "Email address" }).fill(address);
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Notify Me" }).click();

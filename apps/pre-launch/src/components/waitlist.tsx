@@ -8,6 +8,7 @@ import styles from "./waitlist.module.css";
 
 type Widget = {
   render(el: HTMLElement, options: Record<string, unknown>): string;
+  execute(el: HTMLElement): void;
   reset(id: string): void;
 };
 declare global {
@@ -17,13 +18,16 @@ declare global {
 }
 const messages: Record<string, string> = {
   invalid_input: "Check your email address and consent.",
-  challenge: "The security check needs to be refreshed. Please try again.",
+  challenge: "The security check could not be completed. Please try again.",
   policy_changed:
     "The consent terms changed. Reload the page and review them before trying again.",
   rate_limited: "Too many attempts. Please wait and try again.",
   unavailable:
     "Registration is temporarily unavailable. Please try again shortly.",
 };
+const checking = "Completing the security check…";
+const loading = "The security check is loading. Please try again in a moment.";
+
 export function WaitlistForm({
   className,
   siteKey,
@@ -35,61 +39,116 @@ export function WaitlistForm({
 }) {
   const [status, setStatus] = useState("");
   const [pending, setPending] = useState(false);
-  const [token, setToken] = useState("");
   const mount = useRef<HTMLDivElement>(null);
   const widget = useRef<string | undefined>(undefined);
+  const widgetFailed = useRef(false);
+  const submitting = useRef(false);
+  const receiveToken = useRef<((token?: string) => void) | null>(null);
   const emailInput = useRef<HTMLInputElement>(null);
+
   function render() {
     if (!mount.current || !window.turnstile || widget.current !== undefined)
       return;
-    widget.current = window.turnstile.render(mount.current, {
-      sitekey: siteKey,
-      action: "subscribe",
-      callback: setToken,
-      "expired-callback": () => setToken(""),
-      "error-callback": () => {
-        setToken("");
-        setStatus(messages.challenge);
-      },
-    });
+    try {
+      widget.current = window.turnstile.render(mount.current, {
+        sitekey: siteKey,
+        action: "subscribe",
+        execution: "execute",
+        appearance: "interaction-only",
+        "refresh-expired": "auto",
+        "refresh-timeout": "auto",
+        callback: (token: string) => receiveToken.current?.(token),
+        "error-callback": () => {
+          receiveToken.current?.();
+          return true;
+        },
+        "unsupported-callback": () => receiveToken.current?.(),
+      });
+    } catch {
+      widgetFailed.current = true;
+    }
   }
+
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending) return;
-    if (!token) {
-      setStatus(messages.challenge);
+    if (submitting.current) return;
+    if (!siteKey || widgetFailed.current) {
+      setStatus(messages.unavailable);
+      return;
+    }
+    const api = window.turnstile;
+    const container = mount.current;
+    const widgetId = widget.current;
+    if (!api || !container || widgetId === undefined) {
+      setStatus(loading);
       return;
     }
     const form = event.currentTarget;
     const data = new FormData(form);
+    submitting.current = true;
     setPending(true);
-    setStatus("Submitting…");
     try {
-      const response = await fetch(form.action, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: data.get("email"),
-          consent: data.get("consent") === "on",
-          consentVersion,
-          challengeToken: token,
-        }),
-      });
-      if (response.status === 202) {
-        form.reset();
-        setStatus(accepted);
-      } else {
-        const result = await response.json();
-        const code = result.error?.code;
-        setStatus(messages[code] ?? messages.unavailable);
+      for (let attempt = 0; attempt < 2; attempt++) {
+        setStatus(checking);
+        // The widget issues a fresh token for each POST. The timeout also
+        // releases the form if the embedded widget stops responding.
+        const token = await new Promise<string | undefined>((resolve) => {
+          const deadline = setTimeout(() => receiveToken.current?.(), 120_000);
+          receiveToken.current = (value) => {
+            clearTimeout(deadline);
+            receiveToken.current = null;
+            resolve(value);
+          };
+          try {
+            api.reset(widgetId);
+            api.execute(container);
+          } catch {
+            receiveToken.current?.();
+          }
+        });
+        if (!token) {
+          setStatus(messages.challenge);
+          return;
+        }
+        setStatus("Submitting…");
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: data.get("email"),
+            consent: data.get("consent") === "on",
+            consentVersion,
+            challengeToken: token,
+          }),
+        });
+        if (response.status === 202) {
+          form.reset();
+          setStatus(accepted);
+          return;
+        }
+        const result = await response.json().catch(() => null);
+        const code = result?.error?.code;
+        // Siteverify rejected the request before enrollment. It is safe to
+        // submit once more with a new token and the original consent.
+        if (
+          response.status === 400 &&
+          code === "challenge_expired" &&
+          attempt === 0
+        )
+          continue;
+        setStatus(
+          code === "challenge_expired"
+            ? messages.challenge
+            : (messages[code] ?? messages.unavailable),
+        );
         if (code === "invalid_input") emailInput.current?.focus();
+        return;
       }
     } catch {
       setStatus(messages.unavailable);
     } finally {
+      submitting.current = false;
       setPending(false);
-      setToken("");
-      if (widget.current) window.turnstile?.reset(widget.current);
     }
   }
   return (
@@ -100,7 +159,10 @@ export function WaitlistForm({
           nonce={nonce}
           src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
           onReady={render}
-          onError={() => setStatus(messages.unavailable)}
+          onError={() => {
+            widgetFailed.current = true;
+            setStatus(messages.unavailable);
+          }}
         />
       )}
       <form
