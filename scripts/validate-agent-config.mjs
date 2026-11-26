@@ -3,7 +3,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
+ 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const skillRoot = join(repoRoot, '.agents', 'skills');
 const libraryRoot = join(repoRoot, '.agents', 'library');
