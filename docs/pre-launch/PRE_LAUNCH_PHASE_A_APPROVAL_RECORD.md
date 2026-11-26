@@ -1,6 +1,6 @@
 # Meduzellar Pre-Launch Phase A approval record
 
-**Record** PL-A-2026-11-26 · **State** Partial approval recorded, local Phase A sign-off pending
+**Record** PL-A-2026-11-26 · **State** Approved for local implementation and amended for official repository integration
 
 The owner's “Official Owner Approval & Staff+ Full-Stack Implementation Directive” approves the standalone project and named technical direction. It authorizes local and sandbox Phase B once applicable Phase A gates are satisfied. The direction of the architecture is approved. The specific charter, brief, architecture and remaining local TECH_CARD choices still require sign-off against the revisions below. [Module charter](phase-a/AGENTS.md#decision-authority) · [Phase A and Phase B checklists](phase-a/docs/PROGRESS.md#phase-a-owner-review-checklist)
 
@@ -69,3 +69,13 @@ Paths are relative to `docs/pre-launch/phase-a/`. Hashes cover file bytes.
 | `docs/decisions/ADR-002-durable-delivery.md` | `5CED856F9DD1BBFB9650B2131714A40FEB9CD02ABB3545D6830A1C71A23244C4` |
 | `docs/decisions/ADR-003-rendering-and-operator-trust.md` | `426E951B5EADE03D42F799E1FD0EEFC3756797D5AF069B398127DF129E59BD6C` |
 | `docs/decisions/README.md` | `BD5F097442DD54212C068403ED52B180A12B8D1FFC6DA1E2B8C2552AF395D108` |
+
+## Official repository integration amendment
+
+The Product Owner approved the official GitHub repository `Manvel-Lambaryan/Meduzellar.com` as the source of truth for Pre-Launch, with `D:/Meduzellar.com/apps/pre-launch/` as its application directory. This supersedes the standalone source-control location in PL-D01 and ADR-001. The 15-file historical snapshot and its SHA-256 values remain intact. The approval adopts the existing audited stack and internal layout under a module-specific repository structure.
+
+- **Phase A** Approves the destination, module-specific [TECH_CARD](../TECH_CARD.md) and [architecture](../01-ARCHITECTURE.md), and the existing audited application stack.
+- **Phase B** Authorizes import of reviewed source including local visual and configuration changes, validation, an isolated integration branch from upstream `main`, commit, push and a pull request. The standalone source remains available for migration verification.
+- **Phase C** Authorizes reconnection of the existing `meduzellar` Vercel project (`prj_1C4Ste2sLPOSUSUftglCb0iHbWa6`), root `apps/pre-launch`, production branch `main`, protected Preview validation and automatic production deployments after validation and applicable GitHub approvals. Preserve the current public alias and production deployment through Preview validation.
+
+The amendment covers Pre-Launch only. Production waitlist provisioning, JSON storage and live campaigns remain outside this integration. Existing security controls and mandatory repository reviews apply.

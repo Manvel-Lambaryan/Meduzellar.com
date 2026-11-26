@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SubscriberStatus {
+  PENDING
+  ACTIVE
+  UNSUBSCRIBED
+  DELETION_PENDING
+}
+enum ConsentKind {
+  GRANTED
+  VERIFIED
+  REVOKED
+}
+enum TokenPurpose {
+  VERIFY
+  UNSUBSCRIBE
+  PRIVACY
+}
+enum MailKind {
+  VERIFY
+  CONFIRM
+  PRIVACY
+  TEST
+  LAUNCH
+}
+enum WorkState {
+  QUEUED
+  LEASED
+  RETRY
+  ACCEPTED
+  DELIVERED
+  DELAYED
+  BOUNCED
+  COMPLAINED
+  FAILED
+  SKIPPED
+  CANCELED
+  UNKNOWN
+}
+enum CampaignState {
+  DRAFT
+  APPROVED
+  MATERIALIZING
+  RUNNING
+  COMPLETED
+  PAUSED
+  CANCELED
+}
+enum GrantRole {
+  OPERATOR
+  OWNER
+}
+
+model Subscriber {
+  id              String           @id @default(uuid()) @db.Uuid
+  lookup          String           @unique
+  ciphertext      String
+  status          SubscriberStatus @default(PENDING)
+  generation      Int              @default(1)
+  locale          String           @default("en")
+  verifiedAt      DateTime?
+  verifiedEpoch   Int?
+  unsubscribedAt  DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  consent         ConsentEvent[]
+  tokens          EmailToken[]
+  deliveries      Delivery[]
+  privacy         PrivacyRequest[]
+  @@index([status, verifiedAt, id])
+}
+
+model ConsentEvent {
+  id          String      @id @default(uuid()) @db.Uuid
+  subscriberId String     @db.Uuid
+  subscriber  Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  generation  Int
+  kind        ConsentKind
+  version     String
+  contentHash String
+  locale      String
+  source      String
+  at          DateTime    @default(now())
+  @@unique([subscriberId,generation,kind])
+}
+model EmailToken {
+  selector     String       @id
+  subscriberId String      @db.Uuid
+  subscriber   Subscriber  @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  generation   Int
+  purpose      TokenPurpose
+  digest       String       @unique
+  keyVersion   Int          @default(1)
+  issuedAt     DateTime     @default(now())
+  expiresAt    DateTime?
+  consumedAt   DateTime?
+  revokedAt    DateTime?
+  deliveries   Delivery[]
+  privacy      PrivacyRequest?
+  @@index([subscriberId,generation,purpose])
+  @@index([expiresAt])
+}
+model Suppression {
+  lookup     String
+  reason     String
+  provenance String
+  recordedAt DateTime @default(now())
+  expiresAt   DateTime?
+  @@id([lookup,reason])
+}
+model EnrollmentEpoch {
+  id Int @id
+  epoch Int @default(0)
+}
+model Campaign {
+  id                String @id @default(uuid()) @db.Uuid
+  key               String @unique
+  state             CampaignState @default(DRAFT)
+  activeRevisionId  String? @db.Uuid
+  cutoffEpoch       Int?
+  recipientCap      Int?
+  remaining         Int?
+  cursor            String? @db.Uuid
+  materialized      Boolean @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  revisions         CampaignRevision[]
+  deliveries        Delivery[]
+  approval          Approval?
+}
+model CampaignRevision {
+  id          String @id @default(uuid()) @db.Uuid
+  campaignId  String @db.Uuid
+  campaign    Campaign @relation(fields:[campaignId],references:[id],onDelete:Restrict)
+  number      Int
+  subject     String
+  bodyVersion String
+  launchUrl   String
+  sender      String
+  digest      String
+  createdAt   DateTime @default(now())
+  previewedAt DateTime?
+  deliveries  Delivery[]
+  approval    Approval?
+  @@unique([campaignId,number])
+}
+model Approval {
+  campaignId String @id @db.Uuid
+  campaign Campaign @relation(fields:[campaignId],references:[id],onDelete:Restrict)
+  revisionId String @unique @db.Uuid
+  revision CampaignRevision @relation(fields:[revisionId],references:[id],onDelete:Restrict)
+  actor String
+  digest String
+  key String @unique
+  maxRecipients Int
+  createdAt DateTime @default(now())
+}
+model Delivery {
+  id          String @id @default(uuid()) @db.Uuid
+  logicalKey  String @unique
+  kind        MailKind
+  subscriberId String? @db.Uuid
+  subscriber  Subscriber? @relation(fields:[subscriberId],references:[id],onDelete:Cascade)
+  generation  Int?
+  campaignId  String? @db.Uuid
+  campaign    Campaign? @relation(fields:[campaignId],references:[id],onDelete:Restrict)
+  revisionId  String? @db.Uuid
+  revision    CampaignRevision? @relation(fields:[revisionId],references:[id],onDelete:Restrict)
+  tokenSelector String?
+  token       EmailToken? @relation(fields:[tokenSelector],references:[selector],onDelete:SetNull)
+  testRecipientId String?
+  providerId  String? @unique
+  state       WorkState @default(QUEUED)
+  firstSubmission DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  job         Job?
+  messages    CapturedMail?
+  @@index([campaignId,state])
+  @@index([subscriberId,generation])
+}
+model Job {
+  id           String @id @default(uuid()) @db.Uuid
+  deliveryId   String @unique @db.Uuid
+  delivery     Delivery @relation(fields:[deliveryId],references:[id],onDelete:Cascade)
+  state        WorkState @default(QUEUED)
+  runAfter     DateTime @default(now())
+  leaseToken   String? @db.Uuid
+  leaseUntil   DateTime?
+  attemptLimit Int @default(6)
+  attempts     DeliveryAttempt[]
+  @@index([state,runAfter])
+}
+model DeliveryAttempt {
+  jobId String @db.Uuid
+  job Job @relation(fields:[jobId],references:[id],onDelete:Cascade)
+  number Int
+  createdAt DateTime @default(now())
+  outcome String?
+  @@id([jobId,number])
+}
+model WebhookReceipt {
+  provider String
+  eventId String
+  messageId String
+  kind String
+  eventTime DateTime
+  receivedAt DateTime @default(now())
+  processedAt DateTime?
+  @@id([provider,eventId])
+  @@index([messageId,processedAt])
+}
+model OperatorGrant {
+  issuer String
+  subject String
+  role GrantRole
+  revokedAt DateTime?
+  @@id([issuer,subject])
+}
+model AuditEvent {
+  id String @id @default(uuid()) @db.Uuid
+  actor String
+  action String
+  resource String
+  outcome String
+  requestId String
+  requestDigest String?
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+}
+model RateBucket {
+  scope String
+  identity String
+  start DateTime
+  expires DateTime
+  count Int
+  @@id([scope,identity,start])
+  @@index([expires])
+}
+model PrivacyRequest {
+  id String @id @default(uuid()) @db.Uuid
+  supportReference String @unique
+  subscriberId String? @db.Uuid
+  subscriber Subscriber? @relation(fields:[subscriberId],references:[id],onDelete:SetNull)
+  tokenSelector String? @unique
+  token EmailToken? @relation(fields:[tokenSelector],references:[selector],onDelete:SetNull)
+  state String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  verifiedAt DateTime?
+  completedAt DateTime?
+}
+model CapturedMail {
+  deliveryId String @id @db.Uuid
+  delivery Delivery @relation(fields:[deliveryId],references:[id],onDelete:Cascade)
+  sealed String
+  createdAt DateTime @default(now())
+}
+model RecoveryEvent {
+  id String @id @default(uuid()) @db.Uuid
+  lookup String
+  kind String
+  createdAt DateTime @default(now())
+  exportedAt DateTime?
+}
+model WorkerLease {
+  id String @id
+  token String @db.Uuid
+  expiresAt DateTime
+}
