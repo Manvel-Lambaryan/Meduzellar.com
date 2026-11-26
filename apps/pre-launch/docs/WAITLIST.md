@@ -1,6 +1,16 @@
 # Waitlist data and API contracts
 
-**Status** Proposed · Logical schema and HTTP contract for review
+**Status** Approved JSON enrollment boundary. The older relational model below describes the separate, legacy operational implementation.
+
+## JSON enrollment
+
+Private Vercel Blob stores `waitlist.json` as the registration source of truth and `waitlist-limits.json` for HMAC-keyed expiring counters. Use separate Preview and Production stores and scoped server-side tokens. The documents are unavailable from application URLs. Store AES-GCM encrypted addresses, keyed lookup IDs, consent event timestamps and hashes, credential digests, and outbox job state. Conditional ETag writes keep each state transition atomic. Malformed snapshots are preserved for operator recovery.
+
+Configure `APP_ORIGIN`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `BLOB_READ_WRITE_TOKEN`, `LOOKUP_KEY`, `ADDRESS_KEY`, `VERIFY_KEY`, `UNSUBSCRIBE_KEY`, and `RATE_KEY`. Hosted verification also requires `RESEND_API_KEY`, `WAITLIST_FROM_EMAIL`, `RESEND_WEBHOOK_SECRET` and `CRON_SECRET`. Create the Turnstile widget with the exact environment hostname. Set the application origin to that HTTPS origin, without a trailing slash. Wire the signed mail webhook to `/api/v1/webhooks/email` and an approved retry schedule to `/api/v1/internal/cron/delivery`. The browser can retry an expired challenge once using a fresh token. Only durable enrollment returns the generic acceptance response.
+
+For local tests, set `WAITLIST_LOCAL_DIRECTORY` to an isolated writable directory outside public assets, use loopback, official Turnstile test keys, and synthetic `.test` recipients. Mail is captured and encrypted locally. The old `.local/waitlist-report.json` is a SQL export. The inspected copy held no records and was retained. Review and reconcile any later discovered records privately before importing them.
+
+Recovery requires an access-controlled backup and a schema-validated restore with conditional replacement. Keep enrollment and delivery paused during restoration until opt-outs and provider suppressions are reconciled. Production activation also requires the approved privacy notice, erasure/recovery workflow, a verified sender and a real verification-delivery check. The legacy operator/campaign routes do not operate on JSON subscribers.
 
 ## Data model
 

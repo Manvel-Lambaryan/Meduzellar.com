@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { db } from "@/lib/db/client";
 import { mac } from "@/lib/security/crypto";
 
 export class HttpError extends Error {
@@ -98,6 +97,7 @@ export async function rate(
   limit: number,
   seconds: number,
 ) {
+  const { db } = await import("@/lib/db/client");
   const now = Date.now();
   const part = seconds * 1000;
   const start = new Date(Math.floor(now / part) * part);

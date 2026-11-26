@@ -73,7 +73,12 @@ describe("Turnstile validation", () => {
     vi.stubEnv("VERCEL", "1");
     vi.stubEnv("TURNSTILE_SITE_KEY", configuration.siteKey);
     vi.stubEnv("TURNSTILE_SECRET_KEY", configuration.secret);
-    vi.stubEnv("DATABASE_URL", "postgresql://test.invalid/waitlist");
+    vi.stubEnv("DATABASE_URL", undefined);
+    vi.stubEnv("BLOB_READ_WRITE_TOKEN", "fixture-blob-key");
+    vi.stubEnv("RESEND_API_KEY", "fixture-mail-key");
+    vi.stubEnv("WAITLIST_FROM_EMAIL", "Meduzellar <waitlist@example.test>");
+    vi.stubEnv("RESEND_WEBHOOK_SECRET", "fixture-webhook-key");
+    vi.stubEnv("CRON_SECRET", "a".repeat(64));
     for (const key of [
       "LOOKUP_KEY",
       "ADDRESS_KEY",

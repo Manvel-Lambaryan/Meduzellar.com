@@ -4,11 +4,10 @@ import {
   HttpError,
   nonCookie,
   origin,
-  rate,
   source,
 } from "@/lib/security/http";
 import { fromToken } from "@/lib/security/crypto";
-import { applyCredential } from "@/lib/waitlist/service";
+import { useWaitlistToken, waitlistRate } from "@/lib/waitlist/json-service";
 type Params = { params: Promise<{ token: string }> };
 
 export async function GET(_req: Request, { params }: Params) {
@@ -44,8 +43,8 @@ export async function POST(req: Request, { params }: Params) {
       parts.get("List-Unsubscribe") !== "One-Click"
     )
       throw new HttpError(400, "invalid_input");
-    await rate("one-click", source(req), 90, 600);
-    await applyCredential((await params).token, "UNSUBSCRIBE");
+    await waitlistRate("one-click", source(req), 90, 600);
+    await useWaitlistToken((await params).token, "UNSUBSCRIBE");
     return new Response(null, {
       status: 204,
       headers: { "Cache-Control": "no-store" },

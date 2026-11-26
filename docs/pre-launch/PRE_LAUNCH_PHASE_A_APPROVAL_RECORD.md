@@ -79,3 +79,9 @@ The Product Owner approved the official GitHub repository `Manvel-Lambaryan/Medu
 - **Phase C** Authorizes reconnection of the existing `meduzellar` Vercel project (`prj_1C4Ste2sLPOSUSUftglCb0iHbWa6`), root `apps/pre-launch`, production branch `main`, protected Preview validation and automatic production deployments after validation and applicable GitHub approvals. Preserve the current public alias and production deployment through Preview validation.
 
 The amendment covers Pre-Launch only. Production waitlist provisioning, JSON storage and live campaigns remain outside this integration. Existing security controls and mandatory repository reviews apply.
+
+## JSON waitlist storage amendment
+
+The owner subsequently approved Private Vercel Blob, `waitlist.json` as the authoritative Pre-Launch enrollment document, and conditional ETag writes. Phase B authorizes implementation and isolated validation of encrypted, deduplicated JSON enrollment, consent, rate limiting, confirmation, unsubscribe and durable delivery. The earlier standalone and main Platform decisions otherwise retain their scope.
+
+Phase C authorizes the existing Vercel project, separate Preview storage, secure configuration, an integration branch, commit, push and PR. Store provisioning and production rollout require applicable plan eligibility, no unapproved charges, Preview verification and satisfied release gates. No paid plan, service purchase or live campaign is authorized by this amendment.

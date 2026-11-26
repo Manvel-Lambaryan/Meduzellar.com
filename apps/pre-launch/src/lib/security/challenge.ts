@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { HttpError, local, origin } from "@/lib/security/http";
+import { storageConfigured } from "@/lib/waitlist/json-storage";
+import { deliveryConfigured } from "@/lib/waitlist/json-delivery";
 
 const testSecret = "1x0000000000000000000000000000000AA";
 const enrollmentKeys = [
@@ -22,7 +24,6 @@ export function waitlistConfiguration() {
   if (
     !siteKey ||
     !secret ||
-    !process.env.DATABASE_URL?.trim() ||
     enrollmentKeys.some(
       (key) => !/^[a-f0-9]{64}$/i.test(process.env[key] ?? ""),
     ) ||
@@ -35,6 +36,7 @@ export function waitlistConfiguration() {
     const loopback = local();
     const hosted = process.env.VERCEL === "1" || !loopback;
     if (hosted && (loopback || secret === testSecret)) return;
+    if (!storageConfigured() || !deliveryConfigured()) return;
     return { siteKey, secret, hostname, test: secret === testSecret };
   } catch {
     return;

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { after } from "next/server";
 import { accepted, consentVersion } from "@/lib/content";
 import { normalizeEmail } from "@/lib/security/crypto";
 import { challenge, waitlistConfiguration } from "@/lib/security/challenge";
@@ -10,11 +11,15 @@ import {
   local,
   origin,
   output,
-  rate,
   sameOrigin,
   source,
 } from "@/lib/security/http";
-import { subscribe, applyCredential } from "@/lib/waitlist/service";
+import {
+  enroll,
+  useWaitlistToken,
+  waitlistRate,
+} from "@/lib/waitlist/json-service";
+import { tryWaitlistDelivery } from "@/lib/waitlist/json-delivery";
 
 const enrollment = z.strictObject({
   email: z.string().max(320),
@@ -81,21 +86,23 @@ export async function POST(
         throw new HttpError(400, "invalid_input");
       if (value.consentVersion !== consentVersion)
         throw new HttpError(409, "policy_changed");
-      await rate("subscribe-ip", source(req), 10, 600);
-      await rate("subscribe-global", "all", 300, 600);
+      await waitlistRate("subscribe-ip", source(req), 10, 600);
+      await waitlistRate("subscribe-global", "all", 300, 600);
       await challenge(value.challengeToken, configuration, requestId);
-      await subscribe(email);
+      await enroll(email);
+      after(tryWaitlistDelivery);
       return form
         ? Response.redirect(origin() + "/waitlist-result", 303)
         : output({ message: accepted }, 202);
     }
     if (action === "verify" || action === "unsubscribe") {
       const { token } = proof.parse(await json(req));
-      await rate(action, source(req), 45, 600);
-      await applyCredential(
+      await waitlistRate(action, source(req), 45, 600);
+      await useWaitlistToken(
         token,
         action === "verify" ? "VERIFY" : "UNSUBSCRIBE",
       );
+      if (action === "verify") after(tryWaitlistDelivery);
       return output({ ok: true });
     }
     throw new HttpError(404, "not_found");
