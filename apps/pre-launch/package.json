@@ -1,0 +1,53 @@
+{
+  "name": "meduzellar-pre-launch",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=24.22.3 <25"
+  },
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "prisma generate && next build",
+    "start": "next start --hostname 127.0.0.1",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "node --env-file=.env.local node_modules/vitest/vitest.mjs run",
+    "browser": "playwright test",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "worker": "node --env-file=.env.local scripts/worker.mjs",
+    "mail": "node --env-file=.env.local scripts/mail.mjs",
+    "waitlist:report": "node --env-file=.env.local scripts/waitlist-report.mjs"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "7.10.10",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "next": "16.4.6",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "resend": "6.40.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@types/node": "24.10.1",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.3",
+    "@types/react-dom": "19.3.0",
+    "axe-core": "4.14.1",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.4.6",
+    "prettier": "3.10.1",
+    "prisma": "7.10.1",
+    "typescript": "5.9.3",
+    "vitest": "5.1.2"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "effect": "3.22.1"
+    }
+  },
+  "type": "module"
+}

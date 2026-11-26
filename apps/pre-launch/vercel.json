@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "ignoreCommand": "if [ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ] && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- ':(top)apps/pre-launch'; then exit 0; fi; exit 1"
+}

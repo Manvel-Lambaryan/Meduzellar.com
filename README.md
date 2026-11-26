@@ -259,6 +259,8 @@ Meduzellar Platform-ի հիմնական առավելությունը տարբե�
 
 **Project Status: Concept & Planning**
 
+The [Coming Soon and waitlist module](apps/pre-launch/README.md) is maintained in this repository under its own [approved scope](docs/01-ARCHITECTURE.md).
+
 Meduzellar Platform-ը ներկայումս ներկայացվում է որպես նախագծային գաղափար և նախատեսվող ֆունկցիոնալ համակարգ։
 
 Նկարագրված հնարավորությունները ներկայացնում են նախագծի տեսլականն ու զարգացման նպատակները և չեն նշանակում, որ դրանք արդեն իրականացված են։
