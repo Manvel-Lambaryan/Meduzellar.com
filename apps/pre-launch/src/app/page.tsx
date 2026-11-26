@@ -3,6 +3,7 @@ import { WaitlistForm } from "@/components/waitlist";
 import { MascotMarks, Monogram, TitleOrbit } from "@/components/meduzellar-art";
 import { HeroSocial } from "@/components/hero-social";
 import { WheelZoomGuard } from "@/components/wheel-zoom-guard";
+import { waitlistConfiguration } from "@/lib/security/challenge";
 import styles from "./hero.module.css";
 
 const cards = [
@@ -77,7 +78,7 @@ export default async function Home({
         </div>
         <WaitlistForm
           className={styles.signup}
-          siteKey={process.env.TURNSTILE_SITE_KEY ?? ""}
+          siteKey={waitlistConfiguration()?.siteKey ?? ""}
           nonce={nonce}
         />
         <ul className={styles.cards} aria-label="Coming capabilities">

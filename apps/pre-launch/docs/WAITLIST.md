@@ -37,7 +37,7 @@ Prefix below is `/api/v1`. JSON requests use UTF-8, unknown fields fail validati
 
 | Method and route | Request and authorization | Success and failure behavior |
 | --- | --- | --- |
-| POST `/waitlist/subscribe` | `email, consent: true, consentVersion, locale?, challengeToken`. Public with origin and admission controls. | 202 generic accepted. 400 invalid input/challenge, 409 policy refresh, 429 IP/global limit, 503 unavailable. Address-specific suppression/throttling indistinguishable from 202. |
+| POST `/waitlist/subscribe` | `email, consent: true, consentVersion, locale?, challengeToken`. Public with origin and admission controls. | 202 generic accepted. 400 invalid input/challenge, including `challenge_expired` for an expired or redeemed token. 409 policy refresh, 429 IP/global limit, 503 unavailable. Address-specific suppression/throttling indistinguishable from 202. |
 | POST `/waitlist/verify` | `token`, same-origin browser. | 200 verified or previously processed. 400 invalid/expired. 429 partition limits. |
 | POST `/waitlist/unsubscribe` | `token`, same-origin browser. | 200 generic idempotent result. |
 | GET and POST `/waitlist/one-click/{token}` | GET confirmation view. POST `List-Unsubscribe=One-Click` as form URL encoding or multipart. Scoped credential; no cookies or origin dependence. | GET never mutates. POST 204 for a valid or already-processed request; rate and size limited. Dedicated auth policy. |

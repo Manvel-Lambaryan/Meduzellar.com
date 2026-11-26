@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { accepted, consentVersion } from "@/lib/content";
 import { normalizeEmail } from "@/lib/security/crypto";
-import { challenge } from "@/lib/security/challenge";
+import { challenge, waitlistConfiguration } from "@/lib/security/challenge";
 import {
   bytes,
   handle,
@@ -28,10 +28,20 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ action: string }> },
 ) {
-  return handle(async () => {
+  return handle(async (requestId) => {
     sameOrigin(req);
     const { action } = await params;
     if (action === "subscribe") {
+      const configuration = waitlistConfiguration();
+      if (!configuration) {
+        console.error(
+          JSON.stringify({
+            event: "waitlist_configuration_unavailable",
+            requestId,
+          }),
+        );
+        throw new HttpError(503, "unavailable");
+      }
       const form =
         req.headers.get("content-type")?.split(";")[0] ===
         "application/x-www-form-urlencoded";
@@ -73,7 +83,7 @@ export async function POST(
         throw new HttpError(409, "policy_changed");
       await rate("subscribe-ip", source(req), 10, 600);
       await rate("subscribe-global", "all", 300, 600);
-      await challenge(value.challengeToken);
+      await challenge(value.challengeToken, configuration, requestId);
       await subscribe(email);
       return form
         ? Response.redirect(origin() + "/waitlist-result", 303)
