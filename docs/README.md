@@ -5,6 +5,7 @@
 | README | Ինչն է այս ռեպոյում |
 | --- | --- |
 | §1–8 Platform, դոմեններ, տեսլական | [`BRIEF.md`](BRIEF.md) — աշխատանքային սահման |
+| Հաշիվ, Custom Tg, channel, քվոտա, սկզբնական օգնական | [`PLATFORM_SPECIFICATION.md`](PLATFORM_SPECIFICATION.md) — աշխատանքային բնութագիր, դեռ ոչ հաստատված BRIEF |
 | §9 Concept & Planning | Stack և ճարտարապետություն դեռ չկան |
 | §10 Հետագա նախագծեր | Այս ռեպոյից դուրս |
 | §11 Բրենդ | README և BRIEF |

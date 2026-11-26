@@ -1,0 +1,29 @@
+# Custom AI — Shared Platform dependency handoff
+
+**Կարգավիճակ՝ Shared Platform review · Phase A։** [ADR-012-ը](ADR-012-CUSTOM-AI-PLANNING-SIGN-OFF_HY.md) ընդունում է դոմենային ուղղությունները։ Platform launch placement-ը բաց է։ Phase B՝ NOT AUTHORIZED։ Ստորև բոլոր shared contracts-ը Shared Platform Pending են։ Owner դերերը առաջարկներ են։
+
+| ID / սպառող / առաջարկվող owner | Required contract և security | Failure, delivery և blocker |
+| --- | --- | --- |
+| AI-SP-01 · Chat/runs/stream · Shared Identity/Auth | Explicit actor/principal, session/MFA/revoke, SSE resume/authorization, no token in URL։ | Stale access-ը fail closed, revoke-ը կանգնեցնում է stream-ը։ Phase A/P0՝ session և tenant evidence։ |
+| AI-SP-02 · Office context/usage · Shared Organizations | Current membership, AI roles, billing scopes, Office ACL և actor audit։ | Անորոշ/հետ կանչված membership-ը մերժվում է։ P0 optional Office context/P1 RAG՝ shared mapping։ |
+| AI-SP-03 · Run/usage/history · Data Architecture/AI | Durable transaction, source refs, event ID/version, retention և tombstone, bounded replay։ | Provider/queue retry-ն չի ստեղծում նոր logical run։ Phase A/P0՝ transaction ownership, recovery evidence։ |
+| AI-SP-04 · File analysis · Storage/Security | Private intent, quarantine, scan/digest, isolated extraction, signed access cutoff և derived delete։ | Fail-closed files, text chat-ը գործում է։ P0՝ scanner/format/size/retention validation։ |
+| AI-SP-05 · Paid AI/Office · Shared Payments/Finance | Verified plans/credits, authoritative charge/refund, usage references և reconciliation։ AI-ը տնօրինում է admission/spend ledger-ը։ | Unknown charge pending, no new unverified paid grants։ Paid launch՝ sandbox, terms և tariff approval։ |
+| AI-SP-06 · Status updates · Shared Notifications | Minimal terminal/deletion status, preferences, scope, dedupe և retries։ | Dispatch failure-ը run state չի փոխում։ P0՝ privacy and dedupe contract։ |
+| AI-SP-07 · Multi-domain inference · Shared AI/Translation | Capability facade, model/adapter policy, locale, consent, usage evidence, cancellation, routing, tenant quotas։ | Unapproved route կամ consent fail → no processing։ P0 text/P1 media՝ quality, data terms և spend proof։ |
+| AI-SP-08 · Catalog/purchases · Marketplace | P1 authorized read၊ opaque source ref/version և eligibility recheck։ | Unlist/revoke removes result, Marketplace core commerce stays available։ P1՝ public/authorized scope և invalidation։ |
+| AI-SP-09 · Job/CV assistance · Network | P1 authorized job/profile/CV context, purpose և human-driven stage/decision։ | AI outage → manual apply, revoked CV չի հայտնվում retrieval-ում։ P1՝ privacy/employment/fairness proof։ |
+| AI-SP-10 · Translation/summaries · Communication/Translation | Message revision/locale/consent provenance, մեկ stable operation ID ու մեկ reservation, no auto-send։ | Original chat/call continues։ P0 translation capability/P1 summary և STT/TTS՝ ownership ու quality tests։ |
+| AI-SP-11 · Retrieval/actions · Domain owners + AI Governance | Scoped read and source ACL, explicit digest-bound confirmation, allowlisted low-risk actions, domain execution idempotency։ | Changed/expired grant rejected, uncertain result reconciled։ P1՝ tool threat review և առանձին owner approval։ |
+| AI-SP-12 · Workers/audit/recovery · Platform/SRE/Security | RPO/RTO, combined queue/cache/load, isolated workers, redacted telemetry, restore և incident ownership։ | AI circuit breaker չի կանգնեցնում core domains-ը։ Phase A/P0՝ compatibility/cost/load/restore/security evidence։ |
+
+## Համադրություն և բաց որոշումներ
+
+- [Marketplace handoff](../marketplace/MARKETPLACE_SHARED_PLATFORM_DEPENDENCY_HANDOFF_HY.md) · PA-02/03/05–10-ի actor/principal, private storage, signed cutoff և financial idempotency համատեղելի են։ AI P1 catalog read-ը պահպանում է Marketplace visibility-ն։ AI charge/usage-ը առանձին facts են Marketplace order/settlement-ից։ Գնումների ավտոմատ հաստատումը scope-ում չէ։
+- [Custom Telegram handoff](../custom-telegram/CUSTOM_TELEGRAM_SHARED_PLATFORM_DEPENDENCY_HANDOFF_HY.md) · CT-SP-01–08 և CT-SP-12 կիսում են revocation, storage, data և operations պահանջները։ CT-SP-06/07 translation billing-ի ownership-ը հստակեցնել մեկ operation ID, consent epoch, մեկ reservation և provider usage reconciliation պայմանագրով։ Messenger-ը պահում է բնօրինակը նույնիսկ AI outage-ում։ STT/TTS-ը հետևում է Messenger P1 scope-ին։
+- [Network handoff](../professional-network/PROFESSIONAL_NETWORK_SHARED_PLATFORM_DEPENDENCY_HANDOFF_HY.md) · PN-SP-07-ը պահանջում է purpose-limited and explainable retrieval։ Human hiring-ը Network owner-ինն է։ Private CV և notes access-ը մնում է explicit scope-ով։ P0/P1 rollout-ը համաձայնեցնել ըստ approved domain roadmap-ների։
+- [Platform Specification](../PLATFORM_SPECIFICATION.md)-ի search-only սկզբնական օգնականը և Custom AI domain P0-ը պահանջում են Platform launch placement-ի որոշում։ Provider ընտրություն, Redis/BullMQ, DB/vector topology, tariff, retention, shared model quota և exact versions չեն հաստատվում այս handoff-ով։ AI/Network RPO/RTO 1 ժամ/4 ժամ նախագծային թիրախները պետք է համադրել ավելի խիստ Messaging և Marketplace նպատակների հետ։
+
+## Ապացույց և approval order
+
+Phase A-ում համաձայնեցնել launch placement, actor/principal, provider/data policy, budget owner և domain source contracts-ը։ Provider/file feature-ի համար պահանջվում են հայերեն/անգլերեն/ռուսերեն benchmark, consent/data residency/retention պայմաններ, secure file isolation, SSE/revoke թեստ և cap concurrency։ Paid-ի համար պետք են sandbox reconciliation և measured costs։ Public pilot-ի համար անհրաժեշտ են privacy, security/load/restore, incident ownership և go/no-go ապացույցներ։ Պարտադիր են [security invariants-ը](../../AGENTS.md#security-invariants), CORS/CSRF-ը և չլուծված Critical dependency vulnerability-ի դեպքում ազդված աշխատանքի կանգը։ Platform Phase A՝ Open։ Phase B՝ NOT AUTHORIZED։
